@@ -1,7 +1,5 @@
 package com.example.firstzaib
 
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -22,13 +20,11 @@ class CalculatorViewModel : ViewModel() {
                 _resultText.value = "0"
                 return
             }
-
             if (btn == "C") {
-                    _equationText.value = it.substring(0, it.length - 1)
-                    return
+                _equationText.value = it.substring(0, it.length - 1)
+                return
             }
             if (btn == "=") {
-                _equationText.value = _resultText.value
                 return
             } else
                 _equationText.value = it + btn
