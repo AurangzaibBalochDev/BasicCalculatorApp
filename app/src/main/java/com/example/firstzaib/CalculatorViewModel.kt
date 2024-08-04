@@ -31,6 +31,7 @@ class CalculatorViewModel : ViewModel() {
                 _equationText.value = it + btn
 
             try {
+
                 _resultText.value = calculateResult(equationText.value.toString())
             } catch (e: Exception) {
 
