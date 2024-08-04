@@ -42,12 +42,11 @@ class CalculatorViewModel : ViewModel() {
 
                 _resultText.value = calculateResult(equationText.value.toString())
             } catch (_: Exception) {
-
             }
         }
     }
 
-    fun calculateResult(equation: String): String {
+        fun calculateResult(equation: String): String {
         val context: Context = Context.enter()
         context.optimizationLevel = -1
         val scriptable: Scriptable = context.initStandardObjects()
