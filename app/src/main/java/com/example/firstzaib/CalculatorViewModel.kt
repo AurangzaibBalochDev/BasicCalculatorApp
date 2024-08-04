@@ -21,11 +21,19 @@ class CalculatorViewModel : ViewModel() {
                 _resultText.value = "0"
                 return
             }
+            if (IsOperator(btn[0])) {
+                if (it.isNotEmpty() && IsOperator(it[it.length - 1])) {
+                    // Don't append the operator if the last character is already an operator
+                    return
+                }
+            }
             if (btn == "C") {
                 _equationText.value = it.substring(0, it.length - 1)
                 return
             }
             if (btn == "=") {
+                val result = calculateResult(equationText.value.toString())
+                _equationText.value = "${it}=$result"
                 return
             } else
                 _equationText.value = it + btn
@@ -33,7 +41,7 @@ class CalculatorViewModel : ViewModel() {
             try {
 
                 _resultText.value = calculateResult(equationText.value.toString())
-            } catch (e: Exception) {
+            } catch (_: Exception) {
 
             }
         }
@@ -49,5 +57,10 @@ class CalculatorViewModel : ViewModel() {
             finalResult = finalResult.replace(".0", "")
         }
         return finalResult
+    }
+
+
+    private fun IsOperator(character: Char): Boolean {
+        return character == '/' || character == '*' || character == '+' || character == '-'
     }
 }
