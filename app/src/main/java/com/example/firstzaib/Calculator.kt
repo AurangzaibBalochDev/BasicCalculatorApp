@@ -1,6 +1,7 @@
 package com.example.firstzaib
 
 import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -34,7 +35,6 @@ fun Calculator(modifier: Modifier = Modifier, viewModel: CalculatorViewModel) {
         viewModel.equationText.observeAsState()
     val resultText =
         viewModel.resultText.observeAsState()
-
     val buttonList = listOf(
         "C", "(", ")", "/",
         "7", "8", "9", "*",
@@ -46,16 +46,24 @@ fun Calculator(modifier: Modifier = Modifier, viewModel: CalculatorViewModel) {
         // Box -> Column -> (2 Texts) & 1 (Lazy vertical Grid)
         Column(
             modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+
+            Text(text = "Developed by Aurangzaib Baloch", fontWeight = FontWeight.ExtraLight, fontSize = 15.sp)
+        }
+        Column(
+            modifier = modifier.fillMaxSize(),
             horizontalAlignment = Alignment.End
         ) {
-            Spacer(modifier = Modifier.height(140.dp))
+            Spacer(modifier = Modifier.height(130.dp))
 
             Text(
                 text = equationText.value ?: "", style = TextStyle(
                     fontSize = 30.sp,
                     textAlign = TextAlign.End
                 ),
-                maxLines = 5, overflow = TextOverflow.Ellipsis
+                maxLines = 1, overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(10.dp))
 
@@ -65,12 +73,12 @@ fun Calculator(modifier: Modifier = Modifier, viewModel: CalculatorViewModel) {
                     fontSize = 60.sp,
                     textAlign = TextAlign.End
                 ),
-                maxLines = 2
+                maxLines = 1
             )
             Spacer(modifier = Modifier.height(10.dp))
 
             LazyVerticalGrid(columns = GridCells.Fixed(4)) {
-                items(buttonList) {it->
+                items(buttonList) { it ->
                     CalculatorButton(btn = it, onCLick = {
                         viewModel.onButtonClick(it)
                     })

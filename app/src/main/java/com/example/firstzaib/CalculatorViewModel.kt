@@ -5,8 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.mozilla.javascript.Context
 import org.mozilla.javascript.Scriptable
-
-
 class CalculatorViewModel : ViewModel() {
     private val _equationText = MutableLiveData("")
     val equationText: LiveData<String> = _equationText
@@ -16,50 +14,63 @@ class CalculatorViewModel : ViewModel() {
 
     fun onButtonClick(btn: String) {
         _equationText.value?.let {
-            if (btn == "AC") {
-                _equationText.value = ""
-                _resultText.value = "0"
-                return
-            }
-            if (IsOperator(btn[0])) {
-                if (it.isNotEmpty() && IsOperator(it[it.length - 1])) {
-                    // Don't append the operator if the last character is already an operator
-                    return
+            when (btn) {
+                "AC" -> {
+                    _equationText.value = ""
+                    _resultText.value = "0"
                 }
-            }
-            if (btn == "C") {
-                _equationText.value = it.substring(0, it.length - 1)
-                return
-            }
-            if (btn == "=") {
-                val result = calculateResult(equationText.value.toString())
-                _equationText.value = "${it}=$result"
-                return
-            } else
-                _equationText.value = it + btn
+                "C" -> {
+                    if (it.isNotEmpty()) {
+                        _equationText.value = it.substring(0, it.length - 1)
+                    }
+                }
+                "=" -> {
+                    // Only calculate result when "=" is pressed
+                    try {
+                        val result = calculateResult(_equationText.value.toString())
+                        _equationText.value = result
+                        _resultText.value = result
+                    } catch (e: Exception) {
+                        _resultText.value = "Error"
+                    }
+                }
+                else -> {
+                    if (IsOperator(btn[0]) && it.isNotEmpty() && IsOperator(it.last())) {
+                        // Replace last operator if another operator is clicked
+                        _equationText.value = it.substring(0, it.length - 1) + btn
+                    } else {
+                        _equationText.value = it + btn
+                    }
 
-            try {
-
-                _resultText.value = calculateResult(equationText.value.toString())
-            } catch (_: Exception) {
+                    // Try calculating the result, but only if the last character isn't an operator
+                    if (!IsOperator(btn[0])) {
+                        try {
+                            _resultText.value = calculateResult(_equationText.value.toString())
+                        } catch (e: Exception) {
+                            _resultText.value = "Error"
+                        }
+                    }
+                }
             }
         }
     }
 
-        fun calculateResult(equation: String): String {
+    private fun calculateResult(equation: String): String {
         val context: Context = Context.enter()
         context.optimizationLevel = -1
         val scriptable: Scriptable = context.initStandardObjects()
-        var finalResult = context.evaluateString(scriptable, equation, "Javascript", 1, null)
-            .toString()
+        var finalResult = try {
+            context.evaluateString(scriptable, equation, "Javascript", 1, null).toString()
+        } catch (e: Exception) {
+            "Development in progress"
+        }
         if (finalResult.endsWith(".0")) {
             finalResult = finalResult.replace(".0", "")
         }
         return finalResult
     }
 
-
     private fun IsOperator(character: Char): Boolean {
-        return character == '/' || character == '*' || character == '+' || character == '-'
+        return character == '/' || character == '*' || character == '+' || character == '-' || character == '(' || character == ')'
     }
 }
